@@ -1,20 +1,53 @@
 package ru.netology.SeleniumTest;
+import io.github.bonigarcia.wdm.WebDriverManager;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 
-import static com.codeborne.selenide.Condition.exactText;
-import static com.codeborne.selenide.Selenide.$;
-import static com.codeborne.selenide.Selenide.open;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class CallbackTest {
+class SeleniumTest {
+    WebDriver driver;
+
+    @BeforeAll
+    static void setupClass() {
+
+        WebDriverManager.chromedriver().setup();
+
+    }
+
+    @BeforeEach
+    void setUp() {
+        ChromeOptions options = new ChromeOptions();
+
+        options.addArguments("--disable-dev-shm-usage");
+        options.addArguments("--no-sandbox");
+        options.addArguments("--headless");
+        driver = new ChromeDriver(options);
+
+        driver.get("http://localhost:9999");
+    }
+
+    @AfterEach
+    void tearDown() {
+        driver.quit();
+        driver = null;
+    }
 
     @Test
-    void shouldSubmitRequest() {
-        open("http://localhost:9999");
-        $("[data-test-id=callback-form]");
-        $("[data-test-id=name] input").setValue("Василий");
-        $("[data-test-id=phone] input").setValue("+79270000000");
-        $("[data-test-id=agreement]").click();
-        $("[data-test-id=submit]").click();
-        $(".alert-success").shouldHave(exactText("Ваша заявка успешно отправлена! Наш менеджер свяжется с вами ближайшее время."));
+    void shouldSendForm() {
+
+        driver.findElement( By.cssSelector("[data-test-id=name] input")).sendKeys("Гусев Иван");
+        driver.findElement(By.cssSelector("[data-test-id=phone] input")).sendKeys("+79164535391");
+        driver.findElement(By.cssSelector("[data-test-id=agreement]")).click();
+        driver.findElement(By.className("button__text")).click();
+        String expected = "Ваша заявка успешно отправлена! Наш менеджер свяжется с вами в ближайшее время.";
+        String actual = driver.findElement(By.cssSelector("[data-test-id=order-success]")).getText().trim();
+        assertEquals(expected, actual);
     }
 }
