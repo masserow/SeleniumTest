@@ -41,6 +41,7 @@ class SeleniumTest {
 
     @Test
     void shouldSendForm() {
+        //driver.get("http://localhost:9999");
 
         driver.findElement( By.cssSelector("[data-test-id=name] input")).sendKeys("Гусев Иван");
         driver.findElement(By.cssSelector("[data-test-id=phone] input")).sendKeys("+79164535391");
@@ -50,4 +51,33 @@ class SeleniumTest {
         String actual = driver.findElement(By.cssSelector("[data-test-id=order-success]")).getText().trim();
         assertEquals(expected, actual);
     }
+
+    @Test
+    void shouldSendFormNoName() {
+        //driver.get("http://localhost:9999");
+
+        driver.findElement(By.cssSelector("[data-test-id=name] input")).sendKeys("");
+        driver.findElement(By.cssSelector("[data-test-id=phone] input")).sendKeys("+79164535391");
+        driver.findElement(By.cssSelector("[data-test-id=agreement]")).click();
+        driver.findElement(By.className("button__text")).click();
+        String expected = "Поле обязательно для заполнения";
+        String actual = driver.findElements(By.className("input__sub")).get(0).getText().trim();
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void shouldSendFormNoPhone() {
+        //driver.get("http://localhost:9999");
+
+        driver.findElement(By.cssSelector("[data-test-id=name] input")).sendKeys("Гусев Иван");
+        driver.findElement(By.cssSelector("[data-test-id=phone] input")).sendKeys("");
+        driver.findElement(By.cssSelector("[data-test-id=agreement]")).click();
+        driver.findElement(By.className("button__text")).click();
+        String expected = "Поле обязательно для заполнения";
+        String actual = driver.findElements(By.className("input__sub")).get(1).getText().trim();
+        assertEquals(expected, actual);
+    }
+
+
+
 }
